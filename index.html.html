@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC GPA & Admission Average Calculator | High School & University</title>
+<meta name="description" content="Free calculator for BC high school GPA and university admission average (UBC, SFU, UVic top 6 courses). Built for BC students, by a BC student.">
+<style>
+  :root {
+    --navy: #1A2332;
+    --navy-light: #2A3548;
+    --paper: #FAF8F4;
+    --paper-dim: #F0EDE5;
+    --gold: #C9A961;
+    --gold-dark: #A8853F;
+    --ink: #2B2B2B;
+    --ink-soft: #5A5A52;
+    --line: #DAD4C5;
+    --red-stamp: #8B3A3A;
+    --green-stamp: #3A6B4C;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .utility {
+    font-family: 'Courier New', ui-monospace, monospace;
+  }
+
+  /* Header */
+  header {
+    background: var(--navy);
+    color: var(--paper);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    border-bottom: 4px solid var(--gold);
+  }
+
+  header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+      0deg, transparent, transparent 27px, rgba(201,169,97,0.05) 28px
+    );
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    margin: 0 0 10px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  header p.sub {
+    font-size: 16px;
+    color: #C8CCD6;
+    max-width: 540px;
+    margin: 0 auto;
+    font-family: Georgia, serif;
+  }
+
+  /* Tabs styled like transcript folder tabs */
+  .tab-row {
+    display: flex;
+    justify-content: center;
+    gap: 2px;
+    margin: -1px 0 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tab {
+    font-family: Georgia, serif;
+    font-size: 15px;
+    padding: 14px 28px;
+    background: var(--paper-dim);
+    color: var(--ink-soft);
+    border: none;
+    border-top: 3px solid transparent;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    flex: 1;
+    max-width: 280px;
+  }
+
+  .tab:hover { background: #E8E3D6; }
+
+  .tab.active {
+    background: var(--paper);
+    color: var(--navy);
+    border-top: 3px solid var(--gold);
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    border-left: 3px solid var(--gold);
+    padding-left: 16px;
+  }
+
+  /* Course rows */
+  .course-table {
+    border: 1px solid var(--line);
+    background: white;
+    margin-bottom: 20px;
+  }
+
+  .course-header-row {
+    display: grid;
+    grid-template-columns: 1fr 110px 90px 36px;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--navy);
+    color: var(--paper);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .course-row {
+    display: grid;
+    grid-template-columns: 1fr 110px 90px 36px;
+    gap: 10px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--line);
+    align-items: center;
+  }
+
+  .course-row input[type="text"],
+  .course-row input[type="number"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    padding: 8px 10px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+
+  .course-row input:focus {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    border-color: var(--gold);
+  }
+
+  .course-row select {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    padding: 8px 6px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--red-stamp);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+  .remove-btn:hover { opacity: 0.7; }
+  .remove-btn:focus-visible { outline: 2px solid var(--gold); }
+
+  .add-row-btn {
+    width: 100%;
+    background: var(--paper-dim);
+    border: 1px dashed var(--line);
+    padding: 12px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    margin-bottom: 28px;
+    border-radius: 2px;
+  }
+
+  .add-row-btn:hover { background: #EDE8DA; color: var(--navy); }
+  .add-row-btn:focus-visible { outline: 2px solid var(--gold); }
+
+  /* Result stamp */
+  .result-area {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 32px;
+    padding: 28px;
+    background: white;
+    border: 1px solid var(--line);
+    flex-wrap: wrap;
+  }
+
+  .stamp {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 4px double var(--green-stamp);
+    color: var(--green-stamp);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-6deg);
+    flex-shrink: 0;
+    font-family: Georgia, serif;
+  }
+
+  .stamp .big {
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .stamp .small {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .result-details { flex: 1; min-width: 220px; }
+
+  .result-details h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: var(--navy);
+  }
+
+  .result-details p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .result-meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: var(--navy);
+  }
+
+  /* Scale toggle for HS GPA */
+  .scale-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .scale-toggle select {
+    border: 1px solid var(--line);
+    padding: 6px 10px;
+    font-family: Georgia, serif;
+    background: white;
+    border-radius: 2px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 30px 24px 50px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-family: Georgia, serif;
+    border-top: 1px solid var(--line);
+  }
+
+  footer a { color: var(--gold-dark); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .note-box {
+    background: var(--paper-dim);
+    border-left: 3px solid var(--navy);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin-top: 20px;
+  }
+
+  /* University Match cards */
+  .your-avg-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--navy);
+    color: var(--paper);
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .your-avg-banner .num {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: Georgia, serif;
+  }
+
+  .your-avg-banner .label {
+    font-size: 13px;
+    color: #C8CCD6;
+    line-height: 1.5;
+  }
+
+  .your-avg-banner input {
+    width: 90px;
+    padding: 6px 8px;
+    font-size: 16px;
+    border: 1px solid var(--gold);
+    background: var(--navy-light);
+    color: var(--paper);
+    border-radius: 2px;
+    font-family: Georgia, serif;
+  }
+
+  .uni-card {
+    border: 1px solid var(--line);
+    background: white;
+    margin-bottom: 16px;
+  }
+
+  .uni-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 16px 18px 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .uni-card-header h3 {
+    margin: 0;
+    font-size: 19px;
+    color: var(--navy);
+  }
+
+  .uni-card-header .calc-note {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .program-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .program-row {
+    display: grid;
+    grid-template-columns: 1fr 130px 90px;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+
+  .program-row:last-child { border-bottom: none; }
+
+  .program-row .pname { color: var(--ink); }
+
+  .program-row .prange {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .status-pill {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .status-yes { background: #E3EEE6; color: var(--green-stamp); }
+  .status-close { background: #F5EBD8; color: var(--gold-dark); }
+  .status-no { background: #F2E2E2; color: var(--red-stamp); }
+  .status-na { background: var(--paper-dim); color: var(--ink-soft); }
+
+  .uni-link-row {
+    padding: 12px 18px;
+    border-top: 1px solid var(--line);
+    background: var(--paper-dim);
+  }
+
+  .uni-link-row a {
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+  }
+
+  .uni-link-row a:hover { text-decoration: underline; }
+
+  @media (max-width: 560px) {
+    .program-row {
+      grid-template-columns: 1fr 80px;
+      grid-template-areas: "name status" "range range";
+    }
+    .program-row .pname { grid-area: name; }
+    .program-row .status-pill { grid-area: status; }
+    .program-row .prange { grid-area: range; }
+  }
+
+  /* Course Grade calculator */
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border: 1px solid var(--line);
+    width: fit-content;
+  }
+
+  .mode-btn {
+    font-family: Georgia, serif;
+    font-size: 14px;
+    padding: 10px 18px;
+    background: white;
+    color: var(--ink-soft);
+    border: none;
+    cursor: pointer;
+  }
+
+  .mode-btn:not(:last-child) { border-right: 1px solid var(--line); }
+
+  .mode-btn.active {
+    background: var(--navy);
+    color: var(--paper);
+    font-weight: 600;
+  }
+
+  .mode-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
+
+  .mode-panel { display: none; }
+  .mode-panel.active { display: block; }
+
+  .category-card {
+    border: 1px solid var(--line);
+    background: white;
+    margin-bottom: 16px;
+  }
+
+  .category-card-header {
+    display: grid;
+    grid-template-columns: 1fr 90px 36px;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--paper-dim);
+    align-items: center;
+  }
+
+  .category-card-header input[type="text"] {
+    border: 1px solid var(--line);
+    padding: 7px 10px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    background: white;
+    border-radius: 2px;
+  }
+
+  .category-weight-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .category-weight-input input {
+    width: 100%;
+    border: 1px solid var(--line);
+    padding: 7px 8px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    background: white;
+    border-radius: 2px;
+  }
+
+  .category-scores {
+    padding: 12px 14px;
+  }
+
+  .score-row {
+    display: grid;
+    grid-template-columns: 1fr 90px 14px 90px 30px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .score-row input[type="text"] {
+    border: 1px solid var(--line);
+    padding: 7px 10px;
+    font-family: Georgia, serif;
+    font-size: 13px;
+    background: var(--paper);
+    border-radius: 2px;
+  }
+
+  .score-row input[type="number"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    padding: 7px 8px;
+    font-family: Georgia, serif;
+    font-size: 13px;
+    background: var(--paper);
+    border-radius: 2px;
+    text-align: center;
+  }
+
+  .score-row .slash {
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: Georgia, serif;
+  }
+
+  .add-score-btn {
+    background: none;
+    border: none;
+    color: var(--gold-dark);
+    font-family: Georgia, serif;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 0;
+    text-align: left;
+  }
+  .add-score-btn:hover { text-decoration: underline; }
+
+  .category-avg-tag {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--navy);
+    background: var(--paper-dim);
+    padding: 4px 10px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+
+  .add-category-btn {
+    width: 100%;
+    background: var(--paper-dim);
+    border: 1px dashed var(--line);
+    padding: 12px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    margin-bottom: 16px;
+    border-radius: 2px;
+  }
+  .add-category-btn:hover { background: #EDE8DA; color: var(--navy); }
+
+  .weight-warning {
+    font-size: 13px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    border-left: 3px solid var(--red-stamp);
+    background: #F8EEEE;
+    color: var(--red-stamp);
+    display: none;
+  }
+  .weight-warning.show { display: block; }
+
+  @media (max-width: 560px) {
+    .category-card-header {
+      grid-template-columns: 1fr 70px 30px;
+    }
+    .score-row {
+      grid-template-columns: 1fr 60px 10px 60px 26px;
+    }
+  }
+
+  /* Course Grade: Grade/Class navigation */
+  .course-view { display: none; }
+  .course-view.active { display: block; animation: fadeIn 0.2s ease; }
+
+  .grade-card-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .grade-card {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+
+  .grade-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  .grade-card:focus-visible { outline: 2px solid var(--gold); }
+
+  .grade-num {
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--navy);
+    font-family: Georgia, serif;
+  }
+
+  .grade-label {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  .grade-count {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+
+  .back-link {
+    background: none;
+    border: none;
+    color: var(--gold-dark);
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 18px;
+    display: inline-block;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .back-link:focus-visible { outline: 2px solid var(--gold); }
+
+  .class-card {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .class-card:hover { border-color: var(--gold); }
+  .class-card:focus-visible { outline: 2px solid var(--gold); }
+
+  .class-card-name {
+    font-size: 16px;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .class-card-name .placeholder-name {
+    color: var(--ink-soft);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .class-card-grade {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--green-stamp);
+    background: #E3EEE6;
+    padding: 4px 10px;
+    border-radius: 10px;
+  }
+
+  .class-card-grade.empty {
+    color: var(--ink-soft);
+    background: var(--paper-dim);
+  }
+
+  .class-detail-header {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .class-name-input {
+    flex: 1;
+    font-size: 20px;
+    font-family: Georgia, serif;
+    color: var(--navy);
+    border: none;
+    border-bottom: 2px solid var(--line);
+    background: transparent;
+    padding: 6px 2px;
+  }
+
+  .class-name-input:focus {
+    outline: none;
+    border-bottom-color: var(--gold);
+  }
+
+  .empty-state {
+    color: var(--ink-soft);
+    font-size: 14px;
+    padding: 30px 0;
+    text-align: center;
+    border: 1px dashed var(--line);
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 560px) {
+    .course-header-row, .course-row {
+      grid-template-columns: 1fr 80px 70px 30px;
+      gap: 6px;
+    }
+    .tab { padding: 12px 14px; font-size: 13px; }
+    .stamp { width: 110px; height: 110px; }
+    .stamp .big { font-size: 28px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel.active { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">British Columbia &middot; Grades 10–12</p>
+  <h1>BC GPA & Admission Average</h1>
+  <p class="sub">Calculate your high school GPA or your university admission average — built around the actual BC grading scale, not a generic US chart.</p>
+</header>
+
+<div class="tab-row">
+  <button class="tab active" data-tab="gpa">High School GPA</button>
+  <button class="tab" data-tab="course">Course Grade</button>
+  <button class="tab" data-tab="admission">Admission Average</button>
+  <button class="tab" data-tab="match">University Match</button>
+</div>
+
+<main>
+  <!-- HIGH SCHOOL GPA PANEL -->
+  <section class="panel active" id="gpa-panel">
+    <p class="intro">Enter your courses and percentage grades. This converts your BC percentage marks into a 4.0 GPA, the way most BC schools and counsellors do it.</p>
+
+    <div class="scale-toggle">
+      <label for="gpa-scale" class="utility" style="font-size:12px; text-transform:uppercase; letter-spacing:0.05em;">A+ counts as</label>
+      <select id="gpa-scale">
+        <option value="4.0">4.0 (standard)</option>
+        <option value="4.3">4.3 (some schools)</option>
+      </select>
+    </div>
+
+    <div class="course-table">
+      <div class="course-header-row">
+        <div>Course</div>
+        <div>Grade (%)</div>
+        <div>Credits</div>
+        <div></div>
+      </div>
+      <div id="gpa-rows"></div>
+    </div>
+    <button class="add-row-btn" id="gpa-add">+ Add another course</button>
+
+    <div class="result-area">
+      <div class="stamp" id="gpa-stamp">
+        <span class="big" id="gpa-value">—</span>
+        <span class="small">GPA</span>
+      </div>
+      <div class="result-details">
+        <h3 id="gpa-headline">Add your courses to see your GPA</h3>
+        <p id="gpa-sub">Your GPA updates automatically as you type.</p>
+        <div class="result-meta">
+          <span id="gpa-avg-pct"></span>
+          <span id="gpa-course-count"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      Schools vary slightly on exact percentage cutoffs for each letter grade. This uses a common BC scale (A 86–100, B 73–85, C+ 67–72, C 60–66, C- 50–59). Check your school's handbook if you need an exact match for a transcript.
+    </div>
+  </section>
+
+  <!-- COURSE GRADE PANEL -->
+  <section class="panel" id="course-panel">
+
+    <!-- VIEW 1: GRADE SELECTOR -->
+    <div class="course-view active" id="view-grades">
+      <p class="intro">Pick your grade, then pick a class to figure out your current grade in it.</p>
+      <div class="grade-card-row">
+        <button class="grade-card" data-grade="10">
+          <span class="grade-num">10</span>
+          <span class="grade-label">Grade 10</span>
+          <span class="grade-count" data-grade-count="10">0 classes</span>
+        </button>
+        <button class="grade-card" data-grade="11">
+          <span class="grade-num">11</span>
+          <span class="grade-label">Grade 11</span>
+          <span class="grade-count" data-grade-count="11">0 classes</span>
+        </button>
+        <button class="grade-card" data-grade="12">
+          <span class="grade-num">12</span>
+          <span class="grade-label">Grade 12</span>
+          <span class="grade-count" data-grade-count="12">0 classes</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: CLASS LIST FOR A GRADE -->
+    <div class="course-view" id="view-classes">
+      <button class="back-link" id="back-to-grades">&larr; Back to grades</button>
+      <p class="intro" id="classes-intro">Classes in Grade <span id="classes-grade-label"></span></p>
+
+      <div id="class-card-list"></div>
+      <button class="add-category-btn" id="add-class-btn">+ Add a class</button>
+    </div>
+
+    <!-- VIEW 3: SINGLE CLASS DETAIL -->
+    <div class="course-view" id="view-class-detail">
+      <button class="back-link" id="back-to-classes">&larr; Back to Grade <span id="detail-grade-label"></span> classes</button>
+
+      <div class="class-detail-header">
+        <input type="text" id="detail-class-name" placeholder="Class name, e.g. Math 10" class="class-name-input">
+        <button class="remove-btn" id="delete-class-btn" title="Delete this class">&times;</button>
+      </div>
+
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="weighted">Weighted Categories</button>
+        <button class="mode-btn" data-mode="simple">Simple Points</button>
+      </div>
+
+      <!-- WEIGHTED MODE -->
+      <div class="mode-panel active" id="weighted-mode">
+        <div class="weight-warning" id="weight-warning">Your category weights add up to <span id="weight-total">0</span>%, not 100%. Your grade below adjusts to account for this, but double check your weights match your course outline.</div>
+
+        <div id="category-list"></div>
+        <button class="add-category-btn" id="add-category-btn">+ Add another category</button>
+
+        <div class="result-area">
+          <div class="stamp" id="weighted-stamp">
+            <span class="big" id="weighted-value">—</span>
+            <span class="small">Grade</span>
+          </div>
+          <div class="result-details">
+            <h3 id="weighted-headline">Add your categories and scores</h3>
+            <p id="weighted-sub">Your grade updates automatically as you type.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMPLE MODE -->
+      <div class="mode-panel" id="simple-mode">
+        <div class="course-table">
+          <div class="course-header-row" style="grid-template-columns: 1fr 90px 14px 90px 36px;">
+            <div>Item</div>
+            <div>Earned</div>
+            <div></div>
+            <div>Possible</div>
+            <div></div>
+          </div>
+          <div id="simple-rows"></div>
+        </div>
+        <button class="add-row-btn" id="simple-add">+ Add another item</button>
+
+        <div class="result-area">
+          <div class="stamp" id="simple-stamp">
+            <span class="big" id="simple-value">—</span>
+            <span class="small">Grade</span>
+          </div>
+          <div class="result-details">
+            <h3 id="simple-headline">Add your scores</h3>
+            <p id="simple-sub">Just total points earned over points possible.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note-box">
+        Use Weighted Categories if your course outline lists percentages per category (common for Science, Socials, English). Use Simple Points if your teacher just adds up marks across everything (common for Math tests/quizzes). Once you know your course percentage, you can plug it straight into the High School GPA tab.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ADMISSION AVERAGE PANEL -->
+  <section class="panel" id="admission-panel">
+    <p class="intro">Most BC universities (UBC, SFU, UVic) calculate your admission average from your <strong>best six Grade 12-level courses</strong>, including English 12. Enter your Grade 12 courses below — the calculator will automatically pick your top 6.</p>
+
+    <div class="course-table">
+      <div class="course-header-row">
+        <div>Course</div>
+        <div>Grade (%)</div>
+        <div>Required?</div>
+        <div></div>
+      </div>
+      <div id="adm-rows"></div>
+    </div>
+    <button class="add-row-btn" id="adm-add">+ Add another course</button>
+
+    <div class="result-area">
+      <div class="stamp" id="adm-stamp">
+        <span class="big" id="adm-value">—</span>
+        <span class="small">Average</span>
+      </div>
+      <div class="result-details">
+        <h3 id="adm-headline">Add at least 6 courses</h3>
+        <p id="adm-sub">Mark "English 12" or other required prerequisites so they're never dropped, even if they're not your top score.</p>
+        <div class="result-meta">
+          <span id="adm-courses-used"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      This follows the common "top 6" rule most BC universities use, with required courses (like English 12) always included. Exact rules differ by school and program; a competitive average for popular programs is usually 80%+, and 90%+ for highly competitive ones like Computer Science or Health Sciences. Always confirm specifics on your target university's admissions page.
+    </div>
+  </section>
+
+  <!-- UNIVERSITY MATCH PANEL -->
+  <section class="panel" id="match-panel">
+    <p class="intro">See how your average compares to typical admission ranges at major BC universities. These are <strong>general guidelines based on published ranges, not exact cutoffs</strong> — actual minimums shift every year depending on how many people apply. Click through to each program's real admissions page to confirm the current number.</p>
+
+    <div class="your-avg-banner">
+      <div>
+        <div class="label">Your average to compare</div>
+        <input type="number" id="match-input" min="0" max="100" placeholder="85">
+      </div>
+      <div class="label" id="match-source-note">Enter a number, or it'll use your Admission Average tab result automatically.</div>
+    </div>
+
+    <div id="uni-cards"></div>
+
+    <div class="note-box">
+      <strong>Why no exact numbers?</strong> Universities rarely publish hard cutoffs because <em>meeting the minimum doesn't guarantee a seat</em> — popular programs receive more qualified applicants than spots available, so the real bar moves every year. The program ranges above are <strong>rough estimates based on general program competitiveness, not official published figures</strong> — treat "in range" as "worth applying and checking further," not as a guarantee. Always click through to confirm the current year's actual numbers.
+    </div>
+  </section>
+</main>
+
+<footer>
+  Built by a BC student, for BC students. Not affiliated with UBC, SFU, UVic, or the BC Ministry of Education.
+</footer>
+
+<script>
+  // ---------- Tab switching ----------
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + '-panel').classList.add('active');
+    });
+  });
+
+  // ---------- Grade scale ----------
+  function pctToGPA(pct, aPlusCap) {
+    pct = parseFloat(pct);
+    if (isNaN(pct)) return null;
+    if (pct >= 97) return aPlusCap === 4.3 ? 4.3 : 4.0;
+    if (pct >= 86) return 4.0;
+    if (pct >= 80) return 3.7;
+    if (pct >= 77) return 3.3;
+    if (pct >= 73) return 3.0;
+    if (pct >= 70) return 2.7;
+    if (pct >= 67) return 2.3;
+    if (pct >= 64) return 2.0;
+    if (pct >= 60) return 1.7;
+    if (pct >= 55) return 1.3;
+    if (pct >= 50) return 1.0;
+    return 0.0;
+  }
+
+  // ---------- HS GPA rows ----------
+  let gpaRowId = 0;
+  const gpaRowsEl = document.getElementById('gpa-rows');
+
+  function addGpaRow(name = '', grade = '', credits = '4') {
+    const id = 'gpa-row-' + (gpaRowId++);
+    const row = document.createElement('div');
+    row.className = 'course-row';
+    row.id = id;
+    row.innerHTML = `
+      <input type="text" placeholder="e.g. Math 10" value="${name}" class="gpa-name" aria-label="Course name">
+      <input type="number" placeholder="85" value="${grade}" min="0" max="100" class="gpa-grade" aria-label="Grade percentage">
+      <input type="number" placeholder="4" value="${credits}" min="1" max="5" class="gpa-credits" aria-label="Credits">
+      <button class="remove-btn" aria-label="Remove course" title="Remove">&times;</button>
+    `;
+    gpaRowsEl.appendChild(row);
+    row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', calcGPA));
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      row.remove();
+      calcGPA();
+    });
+  }
+
+  document.getElementById('gpa-add').addEventListener('click', () => addGpaRow());
+  document.getElementById('gpa-scale').addEventListener('change', calcGPA);
+
+  function calcGPA() {
+    const rows = gpaRowsEl.querySelectorAll('.course-row');
+    const aPlusCap = parseFloat(document.getElementById('gpa-scale').value);
+    let totalPoints = 0, totalCredits = 0, totalPct = 0, count = 0;
+
+    rows.forEach(row => {
+      const grade = row.querySelector('.gpa-grade').value;
+      const credits = parseFloat(row.querySelector('.gpa-credits').value) || 0;
+      const gp = pctToGPA(grade, aPlusCap);
+      if (gp !== null && credits > 0) {
+        totalPoints += gp * credits;
+        totalCredits += credits;
+        totalPct += parseFloat(grade);
+        count++;
+      }
+    });
+
+    const gpaVal = document.getElementById('gpa-value');
+    const headline = document.getElementById('gpa-headline');
+    const sub = document.getElementById('gpa-sub');
+    const avgPct = document.getElementById('gpa-avg-pct');
+    const courseCount = document.getElementById('gpa-course-count');
+
+    if (count === 0 || totalCredits === 0) {
+      gpaVal.textContent = '—';
+      headline.textContent = 'Add your courses to see your GPA';
+      sub.textContent = 'Your GPA updates automatically as you type.';
+      avgPct.textContent = '';
+      courseCount.textContent = '';
+      return;
+    }
+
+    const gpa = (totalPoints / totalCredits).toFixed(2);
+    const avg = (totalPct / count).toFixed(1);
+    gpaVal.textContent = gpa;
+    headline.textContent = `Your GPA is ${gpa}`;
+    sub.textContent = gpaDescriptor(parseFloat(gpa));
+    avgPct.textContent = `AVG: ${avg}%`;
+    courseCount.textContent = `${count} course${count !== 1 ? 's' : ''}`;
+  }
+
+  function gpaDescriptor(gpa) {
+    if (gpa >= 3.9) return "That's an excellent GPA, right at the top of most BC scales.";
+    if (gpa >= 3.5) return "That's a strong GPA, competitive for most programs.";
+    if (gpa >= 3.0) return "That's a solid, above average GPA.";
+    if (gpa >= 2.0) return "That's a passing GPA. Some room to push higher.";
+    return "Keep at it. Small grade improvements move this number more than you'd think.";
+  }
+
+  // ---------- Admission Average rows ----------
+  let admRowId = 0;
+  const admRowsEl = document.getElementById('adm-rows');
+
+  function addAdmRow(name = '', grade = '', required = false) {
+    const id = 'adm-row-' + (admRowId++);
+    const row = document.createElement('div');
+    row.className = 'course-row';
+    row.id = id;
+    row.innerHTML = `
+      <input type="text" placeholder="e.g. English 12" value="${name}" class="adm-name" aria-label="Course name">
+      <input type="number" placeholder="88" value="${grade}" min="0" max="100" class="adm-grade" aria-label="Grade percentage">
+      <select class="adm-required" aria-label="Required course">
+        <option value="no">No</option>
+        <option value="yes" ${required ? 'selected' : ''}>Yes</option>
+      </select>
+      <button class="remove-btn" aria-label="Remove course" title="Remove">&times;</button>
+    `;
+    admRowsEl.appendChild(row);
+    row.querySelectorAll('input, select').forEach(inp => inp.addEventListener('input', calcAdmission));
+    row.querySelector('.adm-required').addEventListener('change', calcAdmission);
+    row.querySelector('.remove-btn').addEventListener('click', () => {
+      row.remove();
+      calcAdmission();
+    });
+  }
+
+  document.getElementById('adm-add').addEventListener('click', () => addAdmRow());
+
+  function calcAdmission() {
+    const rows = admRowsEl.querySelectorAll('.course-row');
+    let courses = [];
+
+    rows.forEach(row => {
+      const name = row.querySelector('.adm-name').value || 'Course';
+      const grade = parseFloat(row.querySelector('.adm-grade').value);
+      const required = row.querySelector('.adm-required').value === 'yes';
+      if (!isNaN(grade)) {
+        courses.push({ name, grade, required });
+      }
+    });
+
+    const admVal = document.getElementById('adm-value');
+    const headline = document.getElementById('adm-headline');
+    const sub = document.getElementById('adm-sub');
+    const coursesUsed = document.getElementById('adm-courses-used');
+
+    if (courses.length === 0) {
+      admVal.textContent = '—';
+      headline.textContent = 'Add at least 6 courses';
+      sub.textContent = 'Mark required courses (like English 12) so they\'re always included.';
+      coursesUsed.textContent = '';
+      return;
+    }
+
+    const required = courses.filter(c => c.required);
+    const optional = courses.filter(c => !c.required).sort((a, b) => b.grade - a.grade);
+
+    let selected = [...required];
+    const remaining = Math.max(0, 6 - selected.length);
+    selected = selected.concat(optional.slice(0, remaining));
+
+    if (selected.length < 6 && courses.length < 6) {
+      // not enough courses yet, use what we have but flag it
+    }
+
+    const sum = selected.reduce((acc, c) => acc + c.grade, 0);
+    const avg = (sum / selected.length).toFixed(1);
+
+    admVal.textContent = avg + '%';
+    headline.textContent = `Your admission average is ${avg}%`;
+
+    if (courses.length < 6) {
+      sub.textContent = `Based on ${selected.length} course${selected.length !== 1 ? 's' : ''} so far — add more to get a full top-6 picture.`;
+    } else {
+      sub.textContent = admDescriptor(parseFloat(avg));
+    }
+
+    coursesUsed.textContent = 'Using: ' + selected.map(c => c.name).join(', ');
+  }
+
+  function admDescriptor(avg) {
+    if (avg >= 90) return "That's in range for the most competitive programs (e.g. Computer Science, Health Sciences).";
+    if (avg >= 85) return "That's a strong average, competitive for most direct entry programs.";
+    if (avg >= 80) return "That's solid for many popular programs like Arts, Business, or Science.";
+    if (avg >= 70) return "That meets general admission for most BC universities.";
+    return "Below the typical 70% general admission threshold at most BC universities.";
+  }
+
+  // ---------- Init with example rows ----------
+  addGpaRow('English 10', '88', '4');
+  addGpaRow('Math 10', '82', '4');
+  addGpaRow('Science 10', '79', '4');
+  calcGPA();
+
+  addAdmRow('English 12', '85', true);
+  addAdmRow('Pre-Calculus 12', '78', false);
+  addAdmRow('Physics 11', '81', false);
+  addAdmRow('Chemistry 11', '76', false);
+  addAdmRow('Social Studies 11', '88', false);
+  addAdmRow('French 11', '90', false);
+  calcAdmission();
+
+  // ---------- University Match ----------
+  const universities = [
+    {
+      name: 'UBC',
+      fullName: 'University of British Columbia',
+      calcNote: 'Top 6 Grade 12 courses',
+      link: 'https://you.ubc.ca/applying-ubc/requirements/',
+      programs: [
+        { name: 'General / Arts', min: 70, comp: 80 },
+        { name: 'Science', min: 70, comp: 84 },
+        { name: 'Commerce / Business', min: 70, comp: 88 },
+        { name: 'Computer Science', min: 70, comp: 92 },
+        { name: 'Engineering', min: 70, comp: 90 },
+      ]
+    },
+    {
+      name: 'SFU',
+      fullName: 'Simon Fraser University',
+      calcNote: 'Top 6 Grade 12 courses',
+      link: 'https://www.sfu.ca/students/admission/admission-requirements.html',
+      programs: [
+        { name: 'General / Arts & Social Sciences', min: 70, comp: 78 },
+        { name: 'Science', min: 70, comp: 82 },
+        { name: 'Business', min: 70, comp: 85 },
+        { name: 'Computing Science', min: 70, comp: 88 },
+        { name: 'Engineering', min: 70, comp: 86 },
+      ]
+    },
+    {
+      name: 'UVic',
+      fullName: 'University of Victoria',
+      calcNote: 'Top 4 Grade 12 courses (different from UBC/SFU)',
+      link: 'https://www.uvic.ca/undergraduate/admissions/requirements/',
+      programs: [
+        { name: 'Humanities', min: 70, comp: 85 },
+        { name: 'Social Sciences', min: 70, comp: 83 },
+        { name: 'Science', min: 70, comp: 87 },
+        { name: 'Engineering / Computer Science', min: 70, comp: 89 },
+        { name: 'Business', min: 70, comp: 84 },
+      ]
+    },
+  ];
+
+  function statusFor(avg, min, comp) {
+    if (avg === null) return { cls: 'status-na', label: '—' };
+    if (avg >= comp) return { cls: 'status-yes', label: 'In range' };
+    if (avg >= comp - 4) return { cls: 'status-close', label: 'Close' };
+    if (avg >= min) return { cls: 'status-no', label: 'Below typical' };
+    return { cls: 'status-no', label: 'Below min' };
+  }
+
+  function renderUniCards(avg) {
+    const container = document.getElementById('uni-cards');
+    container.innerHTML = '';
+
+    universities.forEach(uni => {
+      const card = document.createElement('div');
+      card.className = 'uni-card';
+
+      const programRows = uni.programs.map(p => {
+        const s = statusFor(avg, p.min, p.comp);
+        return `
+          <div class="program-row">
+            <div class="pname">${p.name}</div>
+            <div class="prange">~${p.comp}%+ typical</div>
+            <div class="status-pill ${s.cls}">${s.label}</div>
+          </div>
+        `;
+      }).join('');
+
+      card.innerHTML = `
+        <div class="uni-card-header">
+          <h3>${uni.name}</h3>
+          <span class="calc-note">${uni.calcNote}</span>
+        </div>
+        <div class="program-list">${programRows}</div>
+        <div class="uni-link-row">
+          <a href="${uni.link}" target="_blank" rel="noopener">Check ${uni.fullName}'s official requirements →</a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  const matchInput = document.getElementById('match-input');
+  const matchSourceNote = document.getElementById('match-source-note');
+
+  function getAdmAverage() {
+    const valText = document.getElementById('adm-value').textContent;
+    const num = parseFloat(valText);
+    return isNaN(num) ? null : num;
+  }
+
+  function updateMatch() {
+    let avg = parseFloat(matchInput.value);
+    if (isNaN(avg)) {
+      const fromAdm = getAdmAverage();
+      if (fromAdm !== null) {
+        matchInput.value = fromAdm;
+        avg = fromAdm;
+        matchSourceNote.textContent = 'Pulled from your Admission Average tab. Edit the number above to compare a different average.';
+      } else {
+        matchSourceNote.textContent = 'Enter a number, or fill out the Admission Average tab first.';
+        renderUniCards(null);
+        return;
+      }
+    } else {
+      matchSourceNote.textContent = 'Comparing the average you entered above.';
+    }
+    renderUniCards(avg);
+  }
+
+  matchInput.addEventListener('input', updateMatch);
+
+  document.querySelector('[data-tab="match"]').addEventListener('click', updateMatch);
+
+  renderUniCards(null);
+
+  // ---------- Course Grade: data model ----------
+  // classes[grade] = array of { id, name, mode, categories: [{name, weight, scores:[{name,earned,possible}]}], simpleScores: [{name,earned,possible}] }
+  const classData = { '10': [], '11': [], '12': [] };
+  let classIdCounter = 0;
+  let currentGrade = null;
+  let currentClassId = null;
+
+  function gradePercentFromClass(cls) {
+    if (cls.mode === 'simple') {
+      let earned = 0, possible = 0;
+      cls.simpleScores.forEach(s => {
+        const e = parseFloat(s.earned), p = parseFloat(s.possible);
+        if (!isNaN(e) && !isNaN(p) && p > 0) { earned += e; possible += p; }
+      });
+      if (possible === 0) return null;
+      return (earned / possible) * 100;
+    } else {
+      let totalWeight = 0, weightedSum = 0, any = false;
+      cls.categories.forEach(cat => {
+        const weight = parseFloat(cat.weight) || 0;
+        let earned = 0, possible = 0;
+        cat.scores.forEach(s => {
+          const e = parseFloat(s.earned), p = parseFloat(s.possible);
+          if (!isNaN(e) && !isNaN(p) && p > 0) { earned += e; possible += p; }
+        });
+        if (possible > 0 && weight > 0) {
+          const avg = (earned / possible) * 100;
+          weightedSum += avg * weight;
+          totalWeight += weight;
+          any = true;
+        }
+      });
+      if (!any || totalWeight === 0) return null;
+      return weightedSum / totalWeight;
+    }
+  }
+
+  function updateGradeCounts() {
+    ['10', '11', '12'].forEach(g => {
+      const el = document.querySelector(`[data-grade-count="${g}"]`);
+      const n = classData[g].length;
+      el.textContent = `${n} class${n !== 1 ? 'es' : ''}`;
+    });
+  }
+
+  // VIEW SWITCHING
+  function showView(viewId) {
+    document.querySelectorAll('.course-view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+  }
+
+  document.querySelectorAll('.grade-card').forEach(card => {
+    card.addEventListener('click', () => {
+      currentGrade = card.dataset.grade;
+      document.getElementById('classes-grade-label').textContent = currentGrade;
+      renderClassList();
+      showView('view-classes');
+    });
+  });
+
+  document.getElementById('back-to-grades').addEventListener('click', () => {
+    showView('view-grades');
+  });
+
+  document.getElementById('back-to-classes').addEventListener('click', () => {
+    saveCurrentClassName();
+    renderClassList();
+    showView('view-classes');
+  });
+
+  // CLASS LIST
+  function renderClassList() {
+    const container = document.getElementById('class-card-list');
+    container.innerHTML = '';
+    const classes = classData[currentGrade];
+
+    if (classes.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.textContent = `No classes added yet for Grade ${currentGrade}.`;
+      container.appendChild(empty);
+      return;
+    }
+
+    classes.forEach(cls => {
+      const pct = gradePercentFromClass(cls);
+      const card = document.createElement('div');
+      card.className = 'class-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      const nameHtml = cls.name
+        ? cls.name
+        : '<span class="placeholder-name">Untitled class</span>';
+      const gradeHtml = pct !== null
+        ? `<span class="class-card-grade">${pct.toFixed(1)}%</span>`
+        : `<span class="class-card-grade empty">No data yet</span>`;
+      card.innerHTML = `<span class="class-card-name">${nameHtml}</span>${gradeHtml}`;
+      card.addEventListener('click', () => openClassDetail(cls.id));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openClassDetail(cls.id); }
+      });
+      container.appendChild(card);
+    });
+  }
+
+  document.getElementById('add-class-btn').addEventListener('click', () => {
+    const id = 'class-' + (classIdCounter++);
+    const newClass = {
+      id, name: '', mode: 'weighted',
+      categories: [],
+      simpleScores: []
+    };
+    classData[currentGrade].push(newClass);
+    updateGradeCounts();
+    openClassDetail(id);
+  });
+
+  // CLASS DETAIL
+  function findClass(id) {
+    for (const g of ['10', '11', '12']) {
+      const found = classData[g].find(c => c.id === id);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  function saveCurrentClassName() {
+    if (!currentClassId) return;
+    const cls = findClass(currentClassId);
+    if (cls) cls.name = document.getElementById('detail-class-name').value;
+  }
+
+  function openClassDetail(id) {
+    currentClassId = id;
+    const cls = findClass(id);
+    if (!cls) return;
+
+    document.getElementById('detail-grade-label').textContent = currentGrade;
+    document.getElementById('detail-class-name').value = cls.name;
+
+    // Set mode toggle UI
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.mode-btn[data-mode="${cls.mode}"]`).classList.add('active');
+    document.getElementById(cls.mode + '-mode').classList.add('active');
+
+    renderCategoryList(cls);
+    renderSimpleList(cls);
+    calcWeighted();
+    calcSimple();
+
+    showView('view-class-detail');
+  }
+
+  document.getElementById('detail-class-name').addEventListener('input', () => {
+    saveCurrentClassName();
+  });
+
+  document.getElementById('delete-class-btn').addEventListener('click', () => {
+    if (!currentClassId) return;
+    classData[currentGrade] = classData[currentGrade].filter(c => c.id !== currentClassId);
+    updateGradeCounts();
+    renderClassList();
+    showView('view-classes');
+  });
+
+  // MODE TOGGLE (now saves to current class)
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.mode + '-mode').classList.add('active');
+      const cls = findClass(currentClassId);
+      if (cls) cls.mode = btn.dataset.mode;
+    });
+  });
+
+  // ---------- Weighted Categories (operate on currentClassId's data) ----------
+  const categoryListEl = document.getElementById('category-list');
+
+  function renderCategoryList(cls) {
+    categoryListEl.innerHTML = '';
+    cls.categories.forEach(cat => buildCategoryCard(cat));
+  }
+
+  function buildCategoryCard(catData) {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.innerHTML = `
+      <div class="category-card-header">
+        <input type="text" placeholder="e.g. Tests" value="${catData.name}" class="cat-name" aria-label="Category name">
+        <div class="category-weight-input">
+          <input type="number" placeholder="40" value="${catData.weight}" min="0" max="100" class="cat-weight" aria-label="Category weight percent">
+          <span class="utility">%</span>
+        </div>
+        <button class="remove-btn cat-remove" aria-label="Remove category" title="Remove">&times;</button>
+      </div>
+      <div class="category-scores">
+        <div class="cat-score-rows"></div>
+        <button class="add-score-btn cat-add-score" type="button">+ Add a score</button>
+        <div class="category-avg-tag cat-avg-tag">Category average: —</div>
+      </div>
+    `;
+    categoryListEl.appendChild(card);
+
+    catData.scores.forEach(s => buildScoreRow(card.querySelector('.cat-score-rows'), catData, s));
+
+    card.querySelector('.cat-name').addEventListener('input', (e) => {
+      catData.name = e.target.value;
+      calcWeighted();
+    });
+    card.querySelector('.cat-weight').addEventListener('input', (e) => {
+      catData.weight = e.target.value;
+      calcWeighted();
+    });
+    card.querySelector('.cat-remove').addEventListener('click', () => {
+      const cls = findClass(currentClassId);
+      cls.categories = cls.categories.filter(c => c !== catData);
+      card.remove();
+      calcWeighted();
+      renderClassList();
+    });
+    card.querySelector('.cat-add-score').addEventListener('click', () => {
+      const newScore = { name: '', earned: '', possible: '' };
+      catData.scores.push(newScore);
+      buildScoreRow(card.querySelector('.cat-score-rows'), catData, newScore);
+      calcWeighted();
+    });
+
+    return card;
+  }
+
+  function buildScoreRow(container, catData, scoreData) {
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Quiz 1" value="${scoreData.name}" class="score-name" aria-label="Score item name">
+      <input type="number" placeholder="8" value="${scoreData.earned}" class="score-earned" aria-label="Points earned">
+      <span class="slash">/</span>
+      <input type="number" placeholder="10" value="${scoreData.possible}" class="score-possible" aria-label="Points possible">
+      <button class="remove-btn score-remove" aria-label="Remove score" title="Remove">&times;</button>
+    `;
+    container.appendChild(row);
+
+    row.querySelector('.score-name').addEventListener('input', (e) => { scoreData.name = e.target.value; });
+    row.querySelector('.score-earned').addEventListener('input', (e) => { scoreData.earned = e.target.value; calcWeighted(); });
+    row.querySelector('.score-possible').addEventListener('input', (e) => { scoreData.possible = e.target.value; calcWeighted(); });
+    row.querySelector('.score-remove').addEventListener('click', () => {
+      catData.scores = catData.scores.filter(s => s !== scoreData);
+      row.remove();
+      calcWeighted();
+    });
+  }
+
+  document.getElementById('add-category-btn').addEventListener('click', () => {
+    const cls = findClass(currentClassId);
+    if (!cls) return;
+    const newCat = { name: '', weight: '', scores: [] };
+    cls.categories.push(newCat);
+    const card = buildCategoryCard(newCat);
+    const newScore = { name: '', earned: '', possible: '' };
+    newCat.scores.push(newScore);
+    buildScoreRow(card.querySelector('.cat-score-rows'), newCat, newScore);
+    calcWeighted();
+  });
+
+  function calcWeighted() {
+    const cls = findClass(currentClassId);
+    if (!cls) return;
+
+    const cards = categoryListEl.querySelectorAll('.category-card');
+    let totalWeight = 0;
+    let weightedSum = 0;
+    let anyData = false;
+
+    cards.forEach((card, i) => {
+      const catData = cls.categories[i];
+      if (!catData) return;
+      const weight = parseFloat(catData.weight) || 0;
+      let earnedSum = 0, possibleSum = 0;
+
+      catData.scores.forEach(s => {
+        const earned = parseFloat(s.earned);
+        const possible = parseFloat(s.possible);
+        if (!isNaN(earned) && !isNaN(possible) && possible > 0) {
+          earnedSum += earned;
+          possibleSum += possible;
+        }
+      });
+
+      const tag = card.querySelector('.cat-avg-tag');
+      if (possibleSum > 0) {
+        const catAvg = (earnedSum / possibleSum) * 100;
+        tag.textContent = `Category average: ${catAvg.toFixed(1)}%`;
+        if (weight > 0) {
+          weightedSum += catAvg * weight;
+          totalWeight += weight;
+          anyData = true;
+        }
+      } else {
+        tag.textContent = 'Category average: —';
+      }
+    });
+
+    const warningEl = document.getElementById('weight-warning');
+    const weightTotalEl = document.getElementById('weight-total');
+    const stampVal = document.getElementById('weighted-value');
+    const headline = document.getElementById('weighted-headline');
+    const sub = document.getElementById('weighted-sub');
+
+    if (totalWeight > 0) {
+      weightTotalEl.textContent = totalWeight.toFixed(0);
+      if (Math.abs(totalWeight - 100) > 0.5) {
+        warningEl.classList.add('show');
+      } else {
+        warningEl.classList.remove('show');
+      }
+    } else {
+      warningEl.classList.remove('show');
+    }
+
+    if (!anyData || totalWeight === 0) {
+      stampVal.textContent = '—';
+      headline.textContent = 'Add your categories and scores';
+      sub.textContent = 'Your grade updates automatically as you type.';
+    } else {
+      const finalGrade = weightedSum / totalWeight;
+      stampVal.textContent = finalGrade.toFixed(1) + '%';
+      headline.textContent = `Your course grade is ${finalGrade.toFixed(1)}%`;
+      sub.textContent = 'Plug this number into the High School GPA tab to see how it affects your GPA.';
+    }
+
+    renderClassList();
+  }
+
+  // ---------- Simple Points (operate on currentClassId's data) ----------
+  const simpleRowsEl = document.getElementById('simple-rows');
+
+  function renderSimpleList(cls) {
+    simpleRowsEl.innerHTML = '';
+    cls.simpleScores.forEach(s => buildSimpleRow(s));
+  }
+
+  function buildSimpleRow(scoreData) {
+    const row = document.createElement('div');
+    row.className = 'score-row';
+    row.style.gridTemplateColumns = '1fr 90px 14px 90px 36px';
+    row.innerHTML = `
+      <input type="text" placeholder="Test 1" value="${scoreData.name}" class="simple-name" aria-label="Item name">
+      <input type="number" placeholder="42" value="${scoreData.earned}" class="simple-earned" aria-label="Points earned">
+      <span class="slash">/</span>
+      <input type="number" placeholder="50" value="${scoreData.possible}" class="simple-possible" aria-label="Points possible">
+      <button class="remove-btn simple-remove" aria-label="Remove item" title="Remove">&times;</button>
+    `;
+    simpleRowsEl.appendChild(row);
+
+    row.querySelector('.simple-name').addEventListener('input', (e) => { scoreData.name = e.target.value; });
+    row.querySelector('.simple-earned').addEventListener('input', (e) => { scoreData.earned = e.target.value; calcSimple(); });
+    row.querySelector('.simple-possible').addEventListener('input', (e) => { scoreData.possible = e.target.value; calcSimple(); });
+    row.querySelector('.simple-remove').addEventListener('click', () => {
+      const cls = findClass(currentClassId);
+      cls.simpleScores = cls.simpleScores.filter(s => s !== scoreData);
+      row.remove();
+      calcSimple();
+    });
+  }
+
+  document.getElementById('simple-add').addEventListener('click', () => {
+    const cls = findClass(currentClassId);
+    if (!cls) return;
+    const newScore = { name: '', earned: '', possible: '' };
+    cls.simpleScores.push(newScore);
+    buildSimpleRow(newScore);
+    calcSimple();
+  });
+
+  function calcSimple() {
+    const cls = findClass(currentClassId);
+    if (!cls) return;
+
+    let earnedSum = 0, possibleSum = 0, count = 0;
+    cls.simpleScores.forEach(s => {
+      const earned = parseFloat(s.earned);
+      const possible = parseFloat(s.possible);
+      if (!isNaN(earned) && !isNaN(possible) && possible > 0) {
+        earnedSum += earned;
+        possibleSum += possible;
+        count++;
+      }
+    });
+
+    const stampVal = document.getElementById('simple-value');
+    const headline = document.getElementById('simple-headline');
+    const sub = document.getElementById('simple-sub');
+
+    if (count === 0 || possibleSum === 0) {
+      stampVal.textContent = '—';
+      headline.textContent = 'Add your scores';
+      sub.textContent = 'Just total points earned over points possible.';
+    } else {
+      const grade = (earnedSum / possibleSum) * 100;
+      stampVal.textContent = grade.toFixed(1) + '%';
+      headline.textContent = `Your course grade is ${grade.toFixed(1)}%`;
+      sub.textContent = `${earnedSum} out of ${possibleSum} points total. Plug this into the High School GPA tab if you'd like.`;
+    }
+
+    renderClassList();
+  }
+
+  // ---------- Init: seed one example class under Grade 10 ----------
+  (function initCourseGradeExample() {
+    const id = 'class-' + (classIdCounter++);
+    const exampleClass = {
+      id, name: 'Science 10', mode: 'weighted',
+      categories: [
+        { name: 'Tests & Quizzes', weight: '40', scores: [
+          { name: 'Unit Test 1', earned: '42', possible: '50' },
+          { name: 'Quiz 2', earned: '17', possible: '20' }
+        ]},
+        { name: 'Homework', weight: '20', scores: [
+          { name: 'Worksheet pack', earned: '28', possible: '30' }
+        ]},
+        { name: 'Final Exam', weight: '40', scores: [
+          { name: 'Final', earned: '0', possible: '100' }
+        ]}
+      ],
+      simpleScores: []
+    };
+    classData['10'].push(exampleClass);
+    updateGradeCounts();
+  })();
+</script>
+
+</body>
+</html>
